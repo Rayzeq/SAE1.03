@@ -75,6 +75,6 @@ for line in $(cat "$1"); do
 	spec=$(echo "$^%*:;.,?#~[|@]+*-\\/=)(_&)}\!" | fold -w1 | shuf -n1)
 	password="$lettre_nom$lettre_prenom${numtel:2:1}${spec}${mois[$mois_naiss]:0:1}"
 
-	useradd -p $password -m -b /home/A$annee $username
+	useradd -g A$annee -p $password -m -b /home/A$annee $username
 	echo "$nom:$prenom:$username:$password" >> /root/A$annee.password
 done
