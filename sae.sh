@@ -67,7 +67,8 @@ for line in $(cat "$1"); do
 		exit 1
 	fi
 
-	username="${prenom:0:1}_$nom"
+	username="$(echo ${prenom:0:1} | tr "[a-z]" "[A-Z]")_$nom"
+	echo $username
 
 	lettre_nom=$(echo $nom | fold -w1 | shuf -n1 | tr "[a-z]" "[A-Z]")
 	lettre_prenom=$(echo $nom | fold -w1 | shuf -n1 | tr "[A-Z]" "[a-z]")
