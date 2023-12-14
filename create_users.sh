@@ -25,8 +25,8 @@ for line in $(cat "$1"); do
 	numtel=$(echo $line | cut -d":" -f4)
 	datenaiss=$(echo $line | cut -d":" -f5)
 
-	if [ -z "$nom" ] || [ -z "$prenom" ] || [ -z "$annee" ] || [ -z "$numtel" ] || [ -z "$datenaiss" ] || [ -z "$jour_naiss" ] || [ -z "$mois_naiss" ] || [ -z "$annee_naiss" ]; then
-		echo "Format de fichier invalide"
+	if [ -z "$nom" ] || [ -z "$prenom" ] || [ -z "$annee" ] || [ -z "$numtel" ] || [ -z "$datenaiss" ]; then
+		echo "Format de fichier invalide (des champs sont manquants)"
 		exit 1
 	fi
 
@@ -38,6 +38,11 @@ for line in $(cat "$1"); do
 	((jour_naiss=($(echo $datenaiss | cut -d"/" -f1))))
 	((mois_naiss=$(echo $datenaiss | cut -d"/" -f2)))
 	((annee_naiss=$(echo $datenaiss | cut -d"/" -f3)))
+
+	if [ -z "$jour_naiss" ] || [ -z "$mois_naiss" ] || [ -z "$annee_naiss" ]; then
+		echo "Date invalide"
+		exit 1
+	fi
 
 	if (( $jour_naiss < 1 || $jour_naiss > 31 )); then
 		echo "Format de fichier invalide"
