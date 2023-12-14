@@ -1,3 +1,8 @@
+if [ "$EUID" != 0 ]; then
+    sudo "$0" "$@"
+    exit $?
+fi
+
 if (( $# != 1 )); then
 	echo "Veuiller préciser un et un seul argument"
 	exit 1
@@ -75,7 +80,8 @@ for line in $(cat "$1"); do
 	spec=$(echo "$^%*:;.,?#~[|@]+*-\\/=)(_&)}\!" | fold -w1 | shuf -n1)
 	password="$lettre_nom$lettre_prenom${numtel:2:1}${spec}${mois[$mois_naiss]:0:1}"
 
-	useradd -g A$annee -p $password -m -b /home/A$annee $username
+	useradd -g "A$annee" -m -b "/home/A$annee" "$username"
+	yes "$password" | passwd "$username"
 	if (( $? != 0 )); then
 		echo "Erreur lors de la création de l'utilisateur $username"
 		exit 1
