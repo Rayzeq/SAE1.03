@@ -81,7 +81,7 @@ for line in $(cat "$1"); do
 	password="$lettre_nom$lettre_prenom${numtel:2:1}${spec}${mois[$mois_naiss]:0:1}"
 
 	useradd -g "A$annee" -m -b "/home/A$annee" "$username"
-	yes "$password" | passwd "$username"
+	echo "$username:$password" | chpasswd
 	if (( $? != 0 )); then
 		echo "Erreur lors de la création de l'utilisateur $username"
 		exit 1
