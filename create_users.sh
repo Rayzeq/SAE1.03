@@ -24,47 +24,20 @@ for line in $(cat "$1"); do
 	((annee=$(echo $line | cut -d":" -f3)))
 	numtel=$(echo $line | cut -d":" -f4)
 	datenaiss=$(echo $line | cut -d":" -f5)
-	((jour_naiss=($(echo $datenaiss | cut -d"/" -f1))))
-	((mois_naiss=$(echo $datenaiss | cut -d"/" -f2)))
-	((annee_naiss=$(echo $datenaiss | cut -d"/" -f3)))
 
-	if [ -z "$nom" ]; then
-		echo "Format de fichier invalide"
-		exit 1
-	fi
-	if [ -z "$prenom" ]; then
-		echo "Format de fichier invalide"
-		exit 1
-	fi
-	if [ -z "$annee" ]; then
-		echo "Format de fichier invalide"
-		exit 1
-	fi
-	if [ -z "$numtel" ]; then
-		echo "Format de fichier invalide"
-		exit 1
-	fi
-	if [ -z "$datenaiss" ]; then
-		echo "Format de fichier invalide"
-		exit 1
-	fi
-	if [ -z "$jour_naiss" ]; then
-		echo "Format de fichier invalide"
-		exit 1
-	fi
-	if [ -z "$mois_naiss" ]; then
-		echo "Format de fichier invalide"
-		exit 1
-	fi
-	if [ -z "$annee_naiss" ]; then
+	if [ -z "$nom" ] || [ -z "$prenom" ] || [ -z "$annee" ] || [ -z "$numtel" ] || [ -z "$datenaiss" ] || [ -z "$jour_naiss" ] || [ -z "$mois_naiss" ] || [ -z "$annee_naiss" ]; then
 		echo "Format de fichier invalide"
 		exit 1
 	fi
 
 	if (( $annee < 1 || $annee > 3 )); then
-		echo "Format de fichier invalide"
+		echo "L'année doit être comprise en 1 et 3"
 		exit 1
 	fi
+
+	((jour_naiss=($(echo $datenaiss | cut -d"/" -f1))))
+	((mois_naiss=$(echo $datenaiss | cut -d"/" -f2)))
+	((annee_naiss=$(echo $datenaiss | cut -d"/" -f3)))
 
 	if (( $jour_naiss < 1 || $jour_naiss > 31 )); then
 		echo "Format de fichier invalide"
