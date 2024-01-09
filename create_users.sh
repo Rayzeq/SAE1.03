@@ -19,13 +19,13 @@ declare -A mois=( ["1"]="janvier" ["2"]="fevrier" ["3"]="mars" ["4"]="avril" ["5
 
 IFS=$'\n'
 for line in $(cat "$1"); do
-	if (($(echo $line | fold -w1 | grep : | wc -l) != 4)); then
+	if (($(echo $line | fold -w1 | grep ":" | wc -l) != 4)); then
 		echo "$1 n'est pas un fichier valide (une ligne n'a pas assez de champs)" >&2
 		exit 3
 	fi
 	nom=$(echo $line | cut -d":" -f1)
 	prenom=$(echo $line | cut -d":" -f2)
-	((annee=$(echo $line | cut -d":" -f3)))
+	(( annee=$(echo $line | cut -d":" -f3) ))
 	numtel=$(echo $line | cut -d":" -f4)
 	datenaiss=$(echo $line | cut -d":" -f5)
 
@@ -50,28 +50,33 @@ for line in $(cat "$1"); do
 		exit 7
 	fi
 
-	((jour_naiss=($(echo $datenaiss | cut -d"/" -f1))))
-	((mois_naiss=$(echo $datenaiss | cut -d"/" -f2)))
-	((annee_naiss=$(echo $datenaiss | cut -d"/" -f3)))
-
-	if [ -z "$jour_naiss" ] || [ -z "$mois_naiss" ] || [ -z "$annee_naiss" ]; then
-		echo "Date invalide" >&2
+	if (($(echo $datenaiss | fold -w1 | grep "/" | wc -l) != 2)); then
+		echo "$1 n'est pas un fichier valide (la date de naissance doit contenir trois valeures)" >&2
 		exit 8
 	fi
 
-	if ((( $annee_naiss % 4 != 0 )) && (( $annee_naiss % 400 != 0 ))) && ((( $mois_naiss == 2 )) && (( $jour_naiss >= 29 ))); then
+	(( jour_naiss=$(echo $datenaiss | cut -d"/" -f1) ))
+	(( mois_naiss=$(echo $datenaiss | cut -d"/" -f2) ))
+	(( annee_naiss=$(echo $datenaiss | cut -d"/" -f3) ))
+
+	if [ -z "$jour_naiss" ] || [ -z "$mois_naiss" ] || [ -z "$annee_naiss" ]; then
 		echo "Date invalide" >&2
 		exit 9
 	fi
 
+	if ( (( $annee_naiss % 4 != 0 )) && (( $annee_naiss % 400 != 0 )) ) && ( (( $mois_naiss == 2 )) && (( $jour_naiss >= 29 )) ); then
+		echo "Date invalide" >&2
+		exit 10
+	fi
+
 	if (( $jour_naiss < 1 || $jour_naiss > 31 )); then
 		echo "Format de fichier invalide" >&2
-		exit 10
+		exit 11
 	fi
 
 	if (( $mois_naiss < 1 || $mois_naiss > 12 )); then
 		echo "Format de fichier invalide" >&2
-		exit 11
+		exit 12
 	fi
 
 	username="$(echo ${prenom:0:1} | tr "[a-z]" "[A-Z]")_$nom"
@@ -84,13 +89,13 @@ for line in $(cat "$1"); do
 	cat "$1" | grep "^$username:"
 	if (( $? == 1 )); then
 		echo "L'utilisateur $username existe déjà" >&2
-		exit 12
+		exit 13
 	fi
 
 	useradd -g "A$annee" -m -b "/home/A$annee" "$username"
 	if (( $? != 0 )); then
 		echo "Erreur lors de la création de l'utilisateur $username"
-		exit 13
+		exit 14
 	fi
 	echo "$username:$password" | chpasswd
 	echo "$nom:$prenom:$username:$password" >> /root/A$annee.password
