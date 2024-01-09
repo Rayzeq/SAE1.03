@@ -87,7 +87,7 @@ for line in $(cat "$1"); do
 	password="$lettre_nom$lettre_prenom${numtel:2:1}${spec}${mois[$mois_naiss]:0:1}"
 
 	cat "$1" | grep "^$username:"
-	if (( $? == 1 )); then
+	if (( $? != 1 )); then
 		echo "L'utilisateur $username existe déjà" >&2
 		exit 13
 	fi
