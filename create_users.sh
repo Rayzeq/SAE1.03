@@ -50,7 +50,7 @@ for line in $(cat "$1"); do
 		exit 7
 	fi
 
-	if (($(echo $datenaiss | fold -w1 | grep "/" | wc -l) != 2)); then
+	if (( $(echo $datenaiss | fold -w1 | grep "/" | wc -l) != 2 )); then
 		echo "$1 n'est pas un fichier valide (la date de naissance doit contenir trois valeures)" >&2
 		exit 8
 	fi
@@ -92,7 +92,7 @@ for line in $(cat "$1"); do
 		exit 13
 	fi
 
-	useradd -g "A$annee" -m -b "/home/A$annee" "$username"
+	useradd -K UMASK=0077 -g "A$annee" -m -b "/home/A$annee" "$username"
 	if (( $? != 0 )); then
 		echo "Erreur lors de la création de l'utilisateur $username"
 		exit 14
