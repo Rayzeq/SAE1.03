@@ -86,11 +86,14 @@ for line in $(cat "$1"); do
 	spec=$(echo "$^%*:;.,?#~[|@]+*-\\/=)(_&)}\!" | fold -w1 | shuf -n1)
 	password="$lettre_nom$lettre_prenom${numtel:2:1}${spec}${mois[$mois_naiss]:0:1}"
 
-	cat "$1" | grep "^$username:"
-	if (( $? != 1 )); then
-		echo "L'utilisateur $username existe déjà" >&2
-		exit 13
-	fi
+	(( count = 0 ))
+	originalUsername=$username
+	cat "/etc/passwd" | grep "^$username:"
+	while (( $? != 1 )); do
+		(( count = count + 1 ))
+		username="$originalUsername$count"
+		cat "/etc/passwd" | grep "^$username:"
+	done
 
 	useradd -K UMASK=0077 -g "A$annee" -m -b "/home/A$annee" "$username"
 	if (( $? != 0 )); then
