@@ -38,7 +38,7 @@ for line in $(cat "$1"); do
 	line=$(echo $line | tr -d '[:blank:]')
 
 	# On vérifie que la ligne ne contient pas de caractères spéciaux
-	if echo $line | grep -q "[^a-zA-Z0-9:/-+]"; then
+	if echo $line | grep -q "[^a-zA-Z0-9:/-]"; then
 		echo "$1 n'est pas un fichier valide (une ligne contient des caractères invalides)" >&2
 		exit 4
 	fi
