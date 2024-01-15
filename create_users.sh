@@ -29,7 +29,7 @@ for line in $(cat "$1"); do
 	# On vérifie si la ligne contient bien 5 champs.
 	# Pour cela on met chaque charactère sur une ligne différente, on grep le résultat
 	# puis on compte le nombre de lignes données par grep
-	if (($(echo $line | fold -w1 | grep ":" | wc -l) != 4)); then
+	if (( $(echo $line | fold -w1 | grep ":" | wc -l) != 4 )); then
 		echo "$1 n'est pas un fichier valide (une ligne n'a pas assez de champs)" >&2
 		exit 3
 	fi
@@ -119,11 +119,9 @@ for line in $(cat "$1"); do
 	# S'il existe déjà on ajoute un chiffre (1, 2, 3, ...) à la fin du nom d'utilisateur
 	(( count = 0 ))
 	originalUsername=$username
-	cat "/etc/passwd" | grep "^$username:" > /dev/null
-	while (( $? != 1 )); do
+	while cat "/etc/passwd" | grep -q "^$username:"; do
 		(( count = count + 1 ))
 		username="$originalUsername$count"
-		cat "/etc/passwd" | grep "^$username:" > /dev/null
 	done
 
 	# On créer l'utilisateur en spécifiant le umask qui va être utilisé pour le home,
