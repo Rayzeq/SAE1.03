@@ -33,6 +33,16 @@ for line in $(cat "$1"); do
 		echo "$1 n'est pas un fichier valide (une ligne n'a pas assez de champs)" >&2
 		exit 3
 	fi
+
+	# On enlève les espaces et tabulations
+	line=$(echo $line | tr -d '[:blank:]')
+
+	# On vérifie que la ligne ne contient pas de caractères spéciaux
+	if echo $line | grep -q "[^a-zA-Z0-9:/-+]"; then
+		echo "$1 n'est pas un fichier valide (une ligne contient des caractères invalides)" >&2
+		exit 4
+	fi
+
 	# On récupère les différents champs
 	nom=$(echo $line | cut -d":" -f1)
 	prenom=$(echo $line | cut -d":" -f2)
@@ -43,30 +53,30 @@ for line in $(cat "$1"); do
 	# On vérifie que les champs ne sont pas vides
 	if [ -z "$nom" ] || [ -z "$prenom" ] || [ -z "$annee" ] || [ -z "$numtel" ] || [ -z "$datenaiss" ]; then
 		echo "Format de fichier invalide (Des champs sont manquants)" >&2
-		exit 4
+		exit 5
 	fi
 
 	# On vérifie que le numéro de téléphone est valide (plus de 10 caractères, et uniquement des chiffres)
 	if (( ${#numtel} < 10 )) then
 		echo "Format de fichier invalide (Le numéro de téléphone est pas assez long)" >&2
-		exit 5
+		exit 6
 	fi
 	re='^[0-9]+$'
 	if ! [[ $numtel =~ $re ]]; then
 		echo "Format de fichier invalide (Le numéro de téléphone n'est pas valide)" >&2
-		exit 6
+		exit 7
 	fi
 
 	# On vérifie que l'année est valide
 	if (( $annee < 1 || $annee > 3 )); then
 		echo "L'année doit être comprise en 1 et 3" >&2
-		exit 7
+		exit 8
 	fi
 
 	# On vérifie que la date de naissance contient bien trois champs
 	if (( $(echo $datenaiss | fold -w1 | grep "/" | wc -l) != 2 )); then
 		echo "$1 n'est pas un fichier valide (la date de naissance doit contenir trois valeurs)" >&2
-		exit 8
+		exit 9
 	fi
 
 	# On récupère les champs de la date de naissance
@@ -77,21 +87,21 @@ for line in $(cat "$1"); do
 	# On vérifie que les champs ne sont pas vides
 	if [ -z "$jour_naiss" ] || [ -z "$mois_naiss" ] || [ -z "$annee_naiss" ]; then
 		echo "Date invalide" >&2
-		exit 9
+		exit 10
 	fi
 
 	# On vérifie que la date de naissance est une date valide
 	if ( (( $annee_naiss % 4 != 0 )) && (( $annee_naiss % 400 != 0 )) ) && ( (( $mois_naiss == 2 )) && (( $jour_naiss >= 29 )) ); then
 		echo "Date invalide" >&2
-		exit 10
+		exit 11
 	fi
 	if (( $jour_naiss < 1 || $jour_naiss > 31 )); then
 		echo "Format de fichier invalide" >&2
-		exit 11
+		exit 12
 	fi
 	if (( $mois_naiss < 1 || $mois_naiss > 12 )); then
 		echo "Format de fichier invalide" >&2
-		exit 12
+		exit 13
 	fi
 
 	# On créer le nom d'utilisateur
